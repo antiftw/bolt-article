@@ -22,45 +22,31 @@ use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Filesystem\Path;
 
-/**
- * @Security("is_granted('upload')")
- */
+#[Security("is_granted('upload')")]
 class Upload implements AsyncZoneInterface
 {
     use CsrfTrait;
 
-    /** @var Config */
-    private $config;
+    private Request $request;
 
-    /** @var TextExtension */
-    private $textExtension;
-
-    /** @var Request */
-    private $request;
-
-    /** @var ArticleConfig */
-    private $articleConfig;
-
-    public function __construct(Config $config, CsrfTokenManagerInterface $csrfTokenManager, TextExtension $textExtension, RequestStack $requestStack, ArticleConfig $articleConfig)
-    {
-        $this->config = $config;
+    public function __construct(
+        private readonly Config $config,
+        private readonly TextExtension $textExtension,
+        private readonly ArticleConfig $articleConfig,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        RequestStack $requestStack,
+    ) {
         $this->csrfTokenManager = $csrfTokenManager;
-        $this->textExtension = $textExtension;
         $this->request = $requestStack->getCurrentRequest();
-        $this->articleConfig = $articleConfig;
     }
 
-    /**
-     * @Route("/bolt_article_image_upload", name="bolt_article_image_upload", methods={"POST"})
-     */
+    #[Route('/article_image_upload', name: 'bolt_article_image_upload', methods: ['POST'])]
     public function handleImageUpload(Request $request): JsonResponse
     {
-        return $this->handleUpload($request, 'image');
+        return $this->handleUpload($request);
     }
 
-    /**
-     * @Route("/bolt_article_file_upload", name="bolt_article_file_upload", methods={"POST"})
-     */
+    #[Route('/article_file_upload', name: 'bolt_article_file_upload', methods: ['POST'])]
     public function handleFileUpload(Request $request): JsonResponse
     {
         return $this->handleUpload($request, 'file');
@@ -120,7 +106,7 @@ class Upload implements AsyncZoneInterface
             /** @var File $result */
             $result = $uploadHandler->process($request->files->get('file'));
 
-            // Clear the 'files' from the superglobals. We do this, so that we prevent breakage
+            // Clear the 'files' from the super-globals. We do this, so that we prevent breakage
             // later on, should we do a `Request::createFromGlobals();`
             // @see: https://github.com/bolt/core/issues/2027
             $_FILES = [];

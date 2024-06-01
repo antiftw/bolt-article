@@ -6,10 +6,11 @@ namespace Bolt\Article;
 
 use Bolt\Configuration\Config;
 use Bolt\Entity\Content;
+use Bolt\Extension\ExtensionInterface;
 use Bolt\Extension\ExtensionRegistry;
 use Bolt\Storage\Query;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -18,49 +19,18 @@ class ArticleConfig
 {
     private const CACHE_DURATION = 1800; // 30 minutes
 
-    /** @var ExtensionRegistry */
-    private $registry;
-
-    /** @var UrlGeneratorInterface */
-    private $urlGenerator;
-
-    /** @var CsrfTokenManagerInterface */
-    private $csrfTokenManager;
-
-    /** @var Config */
-    private $boltConfig;
-
-    /** @var Query */
-    private $query;
-
-    /** @var array */
-    private $config = null;
-
-    /** @var array */
-    private $plugins = null;
-
-    /** @var CacheInterface */
-    private $cache;
-
-    /** @var Security */
-    private $security;
+    private ?array $config = null;
+    private ?array $plugins = null;
 
     public function __construct(
-        ExtensionRegistry $registry,
-        UrlGeneratorInterface $urlGenerator,
-        CsrfTokenManagerInterface $csrfTokenManager,
-        Config $boltConfig,
-        Query $query,
-        CacheInterface $cache,
-        Security $security
+        private readonly ExtensionRegistry $registry,
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly CsrfTokenManagerInterface $csrfTokenManager,
+        private readonly Config $boltConfig,
+        private readonly Query $query,
+        private readonly CacheInterface $cache,
+        private readonly Security $security
     ) {
-        $this->registry = $registry;
-        $this->urlGenerator = $urlGenerator;
-        $this->csrfTokenManager = $csrfTokenManager;
-        $this->boltConfig = $boltConfig;
-        $this->query = $query;
-        $this->cache = $cache;
-        $this->security = $security;
     }
 
     public function getConfig(): array
@@ -93,9 +63,9 @@ class ArticleConfig
         return $this->plugins;
     }
 
-    private function getExtension()
+    private function getExtension(): ?ExtensionInterface
     {
-        return  $this->extension = $this->registry->getExtension(Extension::class);
+        return $this->registry->getExtension(Extension::class);
     }
 
     private function getDefaults(): array
