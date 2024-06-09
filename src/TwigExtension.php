@@ -11,13 +11,7 @@ use Twig\TwigFunction;
 
 class TwigExtension extends AbstractExtension
 {
-    /** @var ArticleConfig */
-    private $articleConfig;
-
-    public function __construct(ArticleConfig $articleConfig)
-    {
-        $this->articleConfig = $articleConfig;
-    }
+    public function __construct(private readonly ArticleConfig $articleConfig) {}
 
     public function getFunctions(): array
     {

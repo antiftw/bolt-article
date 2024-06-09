@@ -17,43 +17,30 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Tightenco\Collect\Support\Collection;
 
-/**
- * @Security("is_granted('list_files:files')")
- */
+#[Security("is_granted('list_files:files')")]
 class Images implements AsyncZoneInterface
 {
     use CsrfTrait;
 
-    /** @var Config */
-    private $config;
+    private Request $request;
 
-    /** @var Request */
-    private $request;
-
-    /** @var ThumbnailHelper */
-    private $thumbnailHelper;
-
-    /** @var ArticleConfig */
-    private $articleConfig;
-
-    public function __construct(Config $config, CsrfTokenManagerInterface $csrfTokenManager, RequestStack $requestStack, UrlGeneratorInterface $urlGenerator, ThumbnailHelper $thumbnailHelper, ArticleConfig $articleConfig)
-    {
-        $this->config = $config;
+    public function __construct(
+        private readonly Config          $config,
+        private readonly ThumbnailHelper $thumbnailHelper,
+        private readonly ArticleConfig   $articleConfig,
+        CsrfTokenManagerInterface        $csrfTokenManager,
+        RequestStack                     $requestStack,
+    ) {
         $this->csrfTokenManager = $csrfTokenManager;
         $this->request = $requestStack->getCurrentRequest();
-        $this->thumbnailHelper = $thumbnailHelper;
-        $this->articleConfig = $articleConfig;
     }
 
-    /**
-     * @Route("/article_images", name="bolt_article_images", methods={"GET"})
-     */
-    public function getImagesList(Request $request): JsonResponse
+    #[Route('/article_images', name: 'bolt_article_images', methods: ['GET'])]
+    public function getImagesList(): JsonResponse
     {
         try {
             $this->validateCsrf('bolt_article');
@@ -65,16 +52,17 @@ class Images implements AsyncZoneInterface
         }
 
         $locationName = $this->request->query->get('location', 'files');
-        $type = $this->request->query->get('type', '');
+        // not used, not sure why it's here?
+        // $type = $this->request->query->get('type', '');
 
-        $path = $this->config->getPath($locationName, true);
+        $path = $this->config->getPath($locationName);
 
-        $files = $this->getImageFilesIndex($path, $type);
+        $files = $this->getImageFilesIndex($path);
 
         return new JsonResponse($files);
     }
 
-    private function getImageFilesIndex(string $path, string $type): Collection
+    private function getImageFilesIndex(string $path): Collection
     {
         $glob = '*.{' . implode(',', self::getImageTypes()) . '}';
 
@@ -90,10 +78,8 @@ class Images implements AsyncZoneInterface
         return new Collection($files);
     }
 
-    /**
-     * @Route("/article_files", name="bolt_article_files", methods={"GET"})
-     */
-    public function getFilesList(Request $request): JsonResponse
+    #[Route('/article_files', name: 'bolt_article_files', methods: ['GET'])]
+    public function getFilesList(): JsonResponse
     {
         try {
             $this->validateCsrf('bolt_article');
@@ -105,29 +91,30 @@ class Images implements AsyncZoneInterface
         }
 
         $locationName = $this->request->query->get('location', 'files');
-        $type = $this->request->query->get('type', '');
+        // not used, not sure why its here?
+        //$type = $this->request->query->get('type', '');
 
-        $path = $this->config->getPath($locationName, true);
+        $path = $this->config->getPath($locationName);
 
-        $files = $this->getFilesIndex($path, $type);
+        $files = $this->getFilesIndex($path);
 
         return new JsonResponse($files);
     }
 
-    private function getFilesIndex(string $path, string $type): Collection
+    private function getFilesIndex(string $path): Collection
     {
         $fileTypes = $this->config->getFileTypes()->toArray();
         $glob = '*.{' . implode(',', $fileTypes) . '}';
 
         $files = [];
 
-        $textExtenion = new TextExtension();
+        $textExtension = new TextExtension();
 
         foreach ($this->findFiles($path, $glob) as $file) {
             $files[] = [
                 'title' => $file->getRelativePathname(),
                 'url' => '/files/' . $file->getRelativePathname(),
-                'size' => $textExtenion->formatBytes($file->getSize(), 1),
+                'size' => $textExtension->formatBytes($file->getSize(), 1),
             ];
         }
 
@@ -145,7 +132,7 @@ class Images implements AsyncZoneInterface
 
         return $finder;
     }
-    
+
     private static function getImageTypes(): array
     {
         return ['gif', 'png', 'jpg', 'jpeg', 'svg', 'avif', 'webp'];
