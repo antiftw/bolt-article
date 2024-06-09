@@ -11,11 +11,11 @@ use Bolt\Widget\TwigAwareInterface;
 
 class ArticleInjectorWidget extends BaseWidget implements TwigAwareInterface
 {
-    protected $name = 'Article Injector Widget';
-    protected $target = Target::AFTER_JS;
-    protected $zone = RequestZone::BACKEND;
-    protected $template = '@article/injector.html.twig';
-    protected $priority = 200;
+    protected ?string $name = 'Article Injector Widget';
+    protected string $target = Target::AFTER_JS;
+    protected ?string $zone = RequestZone::BACKEND;
+    protected ?string $template = '@article/injector.html.twig';
+    protected ?int $priority = 200;
 
     public function __construct()
     {

@@ -13,8 +13,8 @@
         "php": "^8.1"
     },
     "require-dev": {
-        "bolt/core": "^5.2.0-rc.1",
-        "symplify/easy-coding-standard": "^12.2.0"
+        "bolt/core": "dev-5.2.0-rc.2",
+        "symplify/easy-coding-standard": "^12.2"
     },
     "autoload": {
         "psr-4": {
@@ -33,6 +33,49 @@
         "allow-plugins": {
             "symfony/flex": true,
             "drupol/composer-packages": true
+        }
+    },
+    "repositories": {
+
+        "antiftwbolt-core": {
+            "type": "vcs",
+            "url": "https://github.com/antiftw/bolt-core"
+        },
+        "jfsenechal_doctrine_behaviors": {
+            "type": "vcs",
+            "url": "git@github.com:jfsenechal/DoctrineBehaviors.git"
+        },
+        "antiftw-yaml-migrations": {
+            "type": "vcs",
+            "url": "https://github.com/antiftw/bdo-yaml-migrations"
+        },
+        "antiftw-php-translation-symfony-bundle": {
+            "type": "vcs",
+            "url": "https://github.com/antiftw/php-translation-symfony-bundle"
+        },
+        "antiftw-php-translation-extractor": {
+            "type": "vcs",
+            "url": "https://github.com/antiftw/php-translation-extractor"
+        },
+        "antiftw-php-translation-loco-adapter": {
+            "type": "vcs",
+            "url": "https://github.com/antiftw/php-translation-loco-adapter"
+        },
+        "antiftw-bolt-reference-extension": {
+            "type": "vcs",
+            "url": "https://github.com/antiftw/bolt-reference-extension"
+        },
+        "antiftw-bdo-configuration-notices": {
+            "type": "vcs",
+            "url": "https://github.com/antiftw/bdo-configuration-notices"
+        },
+        "antiftw-bdo-weatherwidget": {
+            "type": "vcs",
+            "url": "https://github.com/antiftw/bdo-weatherwidget"
+        },
+        "antiftw-bolt-newswidget": {
+            "type": "vcs",
+            "url": "https://github.com/antiftw/bolt-newswidget"
         }
     }
 }
