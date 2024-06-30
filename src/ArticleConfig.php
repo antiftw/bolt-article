@@ -17,20 +17,20 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 class ArticleConfig
 {
-    private const CACHE_DURATION = 1800; // 30 minutes
-
+    private const int CACHE_DURATION = 1800; // 30 minutes
     private ?array $config = null;
     private ?array $plugins = null;
 
     public function __construct(
-        private readonly ExtensionRegistry $registry,
-        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly ExtensionRegistry         $registry,
+        private readonly UrlGeneratorInterface     $urlGenerator,
         private readonly CsrfTokenManagerInterface $csrfTokenManager,
-        private readonly Config $boltConfig,
-        private readonly Query $query,
-        private readonly CacheInterface $cache,
-        private readonly Security $security
-    ) {
+        private readonly Config                    $boltConfig,
+        private readonly Query                     $query,
+        private readonly CacheInterface            $cache,
+        private readonly Security                  $security
+    )
+    {
     }
 
     public function getConfig(): array
@@ -106,11 +106,11 @@ class ArticleConfig
             ],
         ];
 
-        if (! $this->security->isGranted('upload')) {
+        if (!$this->security->isGranted('upload')) {
             $defaults['imageUpload'] = null;
         }
 
-        if (! $this->security->isGranted('list_files:files')) {
+        if (!$this->security->isGranted('list_files:files')) {
             $defaults['imageManagerJson'] = null;
         }
 

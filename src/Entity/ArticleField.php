@@ -13,7 +13,7 @@ use Twig\Markup;
 #[ORM\Entity]
 class ArticleField extends Field implements Excerptable, FieldInterface
 {
-    public const TYPE = 'article';
+    public const string TYPE = 'article';
 
     /**
      * Override getTwigValue to render field as html
